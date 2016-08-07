@@ -9,7 +9,7 @@ class BusinessesController < ApplicationController
                          .offset(@offset)
                          .limit(@page_size)
     render json: {
-      businesses: businesses.map(&:to_json),
+      businesses: businesses.map { |b| b.as_json(except: [:updated_at]) },
       pages: @page_json,
     }
   end
@@ -27,6 +27,7 @@ class BusinessesController < ApplicationController
     total_pages = (Business.count / @page_size.to_f).ceil
     @page = params[:page].to_i
     @page = 1 if @page <= 0 || @page > total_pages
+    @offset = @page_size * (@page - 1)
 
     pathsize = {}
     pathsize[:page_size] = @page_size if @page_size != DEFAULT_PAGE_SIZE
