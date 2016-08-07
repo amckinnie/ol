@@ -28,17 +28,19 @@ class BusinessesController < ApplicationController
     @page = params[:page].to_i
     @page = 1 if @page <= 0 || @page > total_pages
 
-    @page_json = { current: businesses_path(page: @page, page_size: @page_size) }
+    pathsize = {}
+    pathsize[:page_size] = @page_size if @page_size != DEFAULT_PAGE_SIZE
+    @page_json = { current: businesses_url( pathsize.merge(page: @page) ) }
     if total_pages > 1
       @page_json.merge!({
-        first: businesses_path(page_size: @page_size),
-        last: businesses_path(page: total_pages, page_size: @page_size)
+        first: businesses_url( pathsize ),
+        last: businesses_url( pathsize.merge(page: total_pages) )
         })
       if @page > 1
-        @page_json[:previous] = businesses_path(page: (@page - 1), page_size: @page_size)
+        @page_json[:previous] = businesses_url( pathsize.merge(page: (@page - 1)) )
       end
       if @page < total_pages
-        @page_json[:next] = businesses_path(page: (@page + 1), page_size: @page_size)
+        @page_json[:next] = businesses_url( pathsize.merge(page: (@page + 1)))
       end
     end
   end
