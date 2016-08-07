@@ -15,7 +15,7 @@ class BusinessesController < ApplicationController
   end
 
   def show
-    render json: @business
+    render json: @business.as_json(except: [:updated_at])
   end
 
   private
@@ -47,7 +47,7 @@ class BusinessesController < ApplicationController
   end
 
   def lookup_business
-    @business = Business.where(id: params[:id]).first
+    @business = Business.where(id: params[:id]).take
     render_not_found and return false unless @business
   end
 
