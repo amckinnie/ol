@@ -5,6 +5,9 @@ source 'https://rubygems.org'
 gem 'rails', '4.2.7'
 
 gem 'pg'
+gem 'smarter_csv'
+gem 'activerecord-import'
+
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
