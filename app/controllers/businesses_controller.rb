@@ -1,74 +1,51 @@
 class BusinessesController < ApplicationController
-  before_action :set_business, only: [:show, :edit, :update, :destroy]
+  before_action :setup_paging, only: [:index]
+  before_action :lookup_business, only: [:show]
 
-  # GET /businesses
-  # GET /businesses.json
+  DEFAULT_PAGE_SIZE = 50
+
   def index
-    @businesses = Business.all
+    businesses = Business.order(:id)
+                         .offset(@offset)
+                         .limit(@page_size)
+    render json: {
+      businesses: businesses.map(&:to_json),
+      pages: @page_json,
+    }
   end
 
-  # GET /businesses/1
-  # GET /businesses/1.json
   def show
-  end
-
-  # GET /businesses/new
-  def new
-    @business = Business.new
-  end
-
-  # GET /businesses/1/edit
-  def edit
-  end
-
-  # POST /businesses
-  # POST /businesses.json
-  def create
-    @business = Business.new(business_params)
-
-    respond_to do |format|
-      if @business.save
-        format.html { redirect_to @business, notice: 'Business was successfully created.' }
-        format.json { render :show, status: :created, location: @business }
-      else
-        format.html { render :new }
-        format.json { render json: @business.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PATCH/PUT /businesses/1
-  # PATCH/PUT /businesses/1.json
-  def update
-    respond_to do |format|
-      if @business.update(business_params)
-        format.html { redirect_to @business, notice: 'Business was successfully updated.' }
-        format.json { render :show, status: :ok, location: @business }
-      else
-        format.html { render :edit }
-        format.json { render json: @business.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /businesses/1
-  # DELETE /businesses/1.json
-  def destroy
-    @business.destroy
-    respond_to do |format|
-      format.html { redirect_to businesses_url, notice: 'Business was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    render json: @business
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_business
-      @business = Business.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def business_params
-      params.require(:business).permit(:uuid, :name, :address, :address2, :city, :state, :zip, :country, :phone, :website)
+  def setup_paging
+    @page_size = params[:page_size].to_i
+    @page_size = DEFAULT_PAGE_SIZE if @page_size <= 0
+
+    total_pages = (Business.count / @page_size.to_f).ceil
+    @page = params[:page].to_i
+    @page = 1 if @page <= 0 || @page > total_pages
+
+    @page_json = { current: businesses_path(page: @page, page_size: @page_size) }
+    if total_pages > 1
+      @page_json.merge!({
+        first: businesses_path(page_size: @page_size),
+        last: businesses_path(page: total_pages, page_size: @page_size)
+        })
+      if @page > 1
+        @page_json[:previous] = businesses_path(page: (@page - 1), page_size: @page_size)
+      end
+      if @page < total_pages
+        @page_json[:next] = businesses_path(page: (@page + 1), page_size: @page_size)
+      end
     end
+  end
+
+  def lookup_business
+    @business = Business.where(id: params[:id]).first
+    render_not_found and return false unless @business
+  end
+
 end
