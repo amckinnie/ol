@@ -15,7 +15,7 @@ namespace :data do
     options = {chunk_size: 5000}
     SmarterCSV.process(filename, options) do |chunk|
       businesses = chunk.map {|b| Business.new(b)}
-      Business.import(businesses)
+      Business.import(businesses, validate: false)
       print '.'
     end
 
