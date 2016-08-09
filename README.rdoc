@@ -5,7 +5,7 @@ The app utilizes ruby 2.2.3 and rails 4.2.7
 
 The primary dependency for the app is postgres. If you do not have postgres
 installed, you can download it directly from the site or through Homebrew
-on a Mac. To get it setup with:
+on a Mac. To get it setup:
 
     brew install postgresql
 
@@ -14,14 +14,14 @@ on a Mac. To get it setup with:
     brew services start postgresql
 
 To get ruby installed, it's recommended to use rvm or rbenv to manage your
-ruby version. For rvm, it can be installed with:
+ruby version. For rvm, here is the setup:
 
     # install rvm
     \curl -sSL https://get.rvm.io | bash -s stable
 
     rvm install ruby-2.2.3
 
-To get the app up and running, involves intalling all the gems with bundler
+To get the app up and running, install all the gems with bundler:
 
     # If bundler is not installed
     gem install bundler
