@@ -21,6 +21,8 @@ class BusinessesController < ApplicationController
   private
 
   def setup_paging
+    # interpret paging parameters
+    # set to defaults if value is invalid
     @page_size = params[:page_size].to_i
     @page_size = DEFAULT_PAGE_SIZE if @page_size <= 0
 
@@ -29,6 +31,7 @@ class BusinessesController < ApplicationController
     @page = 1 if @page <= 0 || @page > total_pages
     @offset = @page_size * (@page - 1)
 
+    # create pagination json
     pathsize = {}
     pathsize[:page_size] = @page_size if @page_size != DEFAULT_PAGE_SIZE
     @page_json = { current: businesses_url( pathsize.merge(page: @page) ) }
